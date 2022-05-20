@@ -100,9 +100,7 @@ export default function Presale() {
             var rfpInstance = new library.eth.Contract( window.rfp_abi , receipt[0][0]);        
            setRfpContractInstance(rfpInstance);
            setShowApprove(true);
-        }).catch(err => console.log(err));
-           
-
+        }).catch(err => console.log(err));       
     }
 
     return (
