@@ -22,14 +22,29 @@ export default function Presale() {
     //subject's deposit amount
     const [depositAmount, setDepositAmount] = useState('');
 
+    const [dappMessage, setDappMessage] = useState('');
+
+    const [showMessage, setShowMessage] = useState(false);
+    const [showRFP, setShowRFP] = useState(false);
+    const [showApprove, setShowApprove] = useState(false);
+    const [showPayment, setShowPayment] = useState(false);
+
 
     //init the Smart Contract Instance - when library is available
     useEffect(() => {
         //library gives access to web3
         if(library != null) {
             initContractInstance();
+            setDappMessage('');
+            setShowMessage(false);
+            setShowRFP(true);
             console.log('useEffect() initialized the contract instance');
         } else {
+            setDappMessage('You must have a wallet connected to deposit');
+            setShowMessage(true);
+            setShowRFP(false);
+            setShowApprove(false);
+            setShowPayment(false);
             console.log('library is null...');
         }
     }, [library]);
@@ -56,23 +71,6 @@ export default function Presale() {
         }
     }
 
-    //EVENT LISTENER
-    async function startListener() {
-        console.log('starting listener...');
-        rfpContractInstance.events.allEvents()
-            .on('data', (event) => {
-                console.log(event);
-            })
-            .on('error', console.error);
-
-    }
-
-    async function getMaxAmt() {
-        //calling the public variable in contract
-        let data = await rfpContractInstance.methods.getMaxAmount().call();
-        console.log('Max Amount: ', data);
-    }
-
     async function makePurchase() {
         let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
         console.log('payment amount', paymentAmt);
@@ -86,10 +84,13 @@ export default function Presale() {
 
     async function approveUSDC() {
         console.log('approveUSDC running ... ');
+        let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
+        console.log('amount to approve', paymentAmt);
         let usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
-        await usdc_contract.methods.approve(account, library.utils.toBN(5, 'ether' )).send({ from: account}).then(function(receipt) {
+        await usdc_contract.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
+            setShowPayment(true);
             console.log('approveUSDC finished: ', receipt);
-        }).catch(err => console.log(err));;
+        }).catch(err => console.log(err));
     }
 
     async function getRequestSelf() {
@@ -98,6 +99,7 @@ export default function Presale() {
             console.log('getRequestSelf finished: ', receipt[0][0]);
             var rfpInstance = new library.eth.Contract( window.rfp_abi , receipt[0][0]);        
            setRfpContractInstance(rfpInstance);
+           setShowApprove(true);
         }).catch(err => console.log(err));
            
 
@@ -124,29 +126,35 @@ export default function Presale() {
                         </Button>
                     </Col>   
                 </Row> 
-                <Row>  
-                    <Col md={{ span: 4, offset: 2 }} className='text-center'>
-                        <Button variant='dark' onClick={ startListener }>Listen</Button>    
-                    </Col>
-                    <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ getMaxAmt }>Max Amount?</Button>  
-                    </Col>
-                    <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ approveUSDC }>approve usdc</Button>  
-                    </Col>
-                    <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ getRequestSelf }>get my RFP</Button>  
+                
+                <Row className='mt-5 mb-5'>  
+                    <Col className='text-center'>
+                        <h6 style={{display: showMessage ? "block" : "none"}}>{dappMessage}</h6>
                     </Col>
                 </Row> 
-                <Row className='mt-5 mb-5'>
+
+                <Row className='mt-5 mb-5'>  
                     <Col className='text-center'>
+                        <Button variant='dark' onClick={ getRequestSelf } style={{display: showRFP ? "inline-block" : "none"}}>Request for Payment</Button>  
+                    </Col>
+                </Row> 
+
+                <Row className='mt-5 mb-5'>
+                    <Col md={{span: 4, offset: 4}} className='text-center' style={{display: showApprove ? "inline-block" : "none"}}>
                         <h6>USDC Amount:</h6>
                         <FormControl
                             type='text' value={ depositAmount } 
                             onChange={ (event) => 
                                 setDepositAmount(event.target.value) }/>
                     </Col>
-                    <Col md={{ span: 4 }} className='text-center'>
+                </Row>
+                <Row>
+                    <Col className='text-center' style={{display: showApprove ? "inline-block" : "none"}}>
+                        <Button variant='dark' onClick={ approveUSDC }>approve usdc</Button>  
+                    </Col>
+                </Row>
+                <Row className='mt-3 mb-5'>
+                    <Col className='text-center' style={{display: showPayment ? "inline-block" : "none"}}>
                         <Button variant='dark' onClick={ makePurchase }>make payment</Button>  
                     </Col>
                 </Row>
