@@ -29,7 +29,7 @@ export default function Presale() {
     }, [library]);
     
     async function initContractInstance() {        
-        var ci = new library.eth.Contract( window.cl_abi , '0x9f143Aeba1250A491122D905e84E984Eea3CCDaA');
+        var ci = new library.eth.Contract( window.rfp_abi , '0x59238A0D412d925f729D95D3b028f79e46e4c69a');
         
         setContractInstance(ci);
         console.log("init contract instance...");
@@ -69,8 +69,8 @@ export default function Presale() {
     }
 
     async function makePurchase() {
-        //let paymentAmt = library.utils.toBN(5, 'ether' );
-        let paymentAmt = library.utils.fromWei('1000000000000000000', 'ether');
+        let paymentAmt = library.utils.toBN(5, 'ether' );
+        //let paymentAmt = library.utils.fromWei('1000000000000000000', 'ether');
         console.log(paymentAmt);
         await contractInstance.methods.depositUSDC(
             paymentAmt
@@ -141,7 +141,7 @@ export default function Presale() {
                         <Button variant='dark' onClick={ getMaxAmt }>Max Amount?</Button>  
                     </Col>
                     <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ makePurchase }>doit</Button>  
+                        <Button variant='dark' onClick={ makePurchase }>make payment</Button>  
                     </Col>
                     <Col md={{ span: 4 }} className='text-center'>
                         <Button variant='dark' onClick={ approveUSDC }>approve usdc</Button>  

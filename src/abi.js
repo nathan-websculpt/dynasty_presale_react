@@ -1,57 +1,4 @@
-window.cl_abi = [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint32",
-				"name": "_amount",
-				"type": "uint32"
-			}
-		],
-		"name": "depositUSDC",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
-	},
-	{
-		"stateMutability": "nonpayable",
-		"type": "fallback"
-	},
+window.rfp_abi = [
 	{
 		"inputs": [
 			{
@@ -84,6 +31,149 @@ window.cl_abi = [
 		"type": "constructor"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"stateMutability": "nonpayable",
+		"type": "fallback"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_recipient",
+				"type": "address"
+			}
+		],
+		"name": "checkOwnership",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_amount",
+				"type": "uint32"
+			}
+		],
+		"name": "depositUSDC",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMaxAmountUSDC",
+		"outputs": [
+			{
+				"internalType": "uint32",
+				"name": "",
+				"type": "uint32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	}
+];
+
+window.funding_abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_projectId",
+				"type": "string"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint32",
+				"name": "_requestIndex",
+				"type": "uint32"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum FundingSupplyChain_Simplified.StateType",
+				"name": "_state",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_requestAddress",
+				"type": "address"
+			}
+		],
+		"name": "RFPStateChange",
+		"type": "event"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -104,7 +194,87 @@ window.cl_abi = [
 	},
 	{
 		"inputs": [],
-		"name": "getMaxAmountUSDC",
+		"name": "getBalanceUSDC_Sender",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalanceUSD_Contract",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getProjectId",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_index",
+				"type": "uint32"
+			}
+		],
+		"name": "getRequestByIndex",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "contract RFPItem",
+						"name": "rfp",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "requestId",
+						"type": "string"
+					},
+					{
+						"internalType": "enum FundingSupplyChain_Simplified.StateType",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "subject",
+						"type": "address"
+					}
+				],
+				"internalType": "struct FundingSupplyChain_Simplified.RequestType",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRequestsNumber",
 		"outputs": [
 			{
 				"internalType": "uint32",
@@ -113,6 +283,123 @@ window.cl_abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRequestsSelf",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "contract RFPItem",
+						"name": "rfp",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "requestId",
+						"type": "string"
+					},
+					{
+						"internalType": "enum FundingSupplyChain_Simplified.StateType",
+						"name": "state",
+						"type": "uint8"
+					},
+					{
+						"internalType": "address",
+						"name": "subject",
+						"type": "address"
+					}
+				],
+				"internalType": "struct FundingSupplyChain_Simplified.RequestType[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_requestId",
+				"type": "string"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_maxAmountUSDC",
+				"type": "uint32"
+			},
+			{
+				"internalType": "address",
+				"name": "_subject",
+				"type": "address"
+			}
+		],
+		"name": "registerRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_requestIndex",
+				"type": "uint32"
+			},
+			{
+				"internalType": "uint32",
+				"name": "_amount",
+				"type": "uint32"
+			},
+			{
+				"internalType": "bool",
+				"name": "_completed",
+				"type": "bool"
+			},
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
+			}
+		],
+		"name": "triggerPaymentUSDC",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_amount",
+				"type": "uint32"
+			},
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "withdrawUSDCTo",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ];
