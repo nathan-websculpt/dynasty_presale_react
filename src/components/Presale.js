@@ -18,6 +18,8 @@ export default function Presale() {
     const [rfpContractInstance, setRfpContractInstance] = useState(null);
     //instance of the Funding Smart Contract
     const [fundingContractInstance, setFundingContractInstance] = useState(null);
+    //instance of the ERC20 Smart Contract
+    const [usdcContractInstance, setusdcContractInstance] = useState(null);
 
     //subject's deposit amount
     const [depositAmount, setDepositAmount] = useState('');
@@ -52,6 +54,9 @@ export default function Presale() {
     async function initContractInstance() {     
         var fundingInstance = new library.eth.Contract(window.funding_abi, '0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3');
         setFundingContractInstance(fundingInstance);
+
+        var usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
+        setusdcContractInstance(usdc_contract);
         console.log("init contract instance...");
     }
 
@@ -77,10 +82,11 @@ export default function Presale() {
         console.log('isNotNumber: ', isNotNumber);
 
         if(isNotNumber == false) {
-            let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
+            let USDCdecimals = await usdcContractInstance.methods.decimals().call();
+            let paymentAmt = library.utils.toBN(( depositAmount * (10 ** USDCdecimals)), 'ether' );
             console.log('amount to approve', paymentAmt);
-            let usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
-            await usdc_contract.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
+
+            await usdcContractInstance.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
                 setShowPayment(true);
                 console.log('approveUSDC finished: ', receipt);
             }).catch(err => console.log(err));
@@ -95,12 +101,13 @@ export default function Presale() {
         console.log('isNotNumber: ', isNotNumber);
 
         if(isNotNumber == false) {
-            let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
-            console.log('payment amount', paymentAmt);
+            let USDCdecimals = await usdcContractInstance.methods.decimals().call();
+            let paymentAmt = library.utils.toBN(( depositAmount * (10 ** USDCdecimals)), 'ether' );
+            console.log('amount to approve', paymentAmt);
+
             await rfpContractInstance.methods.depositUSDC(
                 paymentAmt
             ).send({ from: account }).then(function(receipt){
-                //let eventLog = receipt.events.DataLog.returnValues[0]; 
                 console.log('deposit __>: ', receipt);
             }).catch(err => console.log(err));     
         } else {
