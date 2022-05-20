@@ -14,8 +14,14 @@ export default function Presale() {
     // deactivate:  Method to disconnect from wallet
     const { active, account, library, connector, activate, deactivate } = useWeb3React();
 
-    //instance of the Smart Contract
-    const [contractInstance, setContractInstance] = useState(null);
+    //instance of the RFPItem Smart Contract
+    const [rfpContractInstance, setRfpContractInstance] = useState(null);
+    //instance of the Funding Smart Contract
+    const [fundingContractInstance, setFundingContractInstance] = useState(null);
+
+    //subject's deposit amount
+    const [depositAmount, setDepositAmount] = useState('');
+
 
     //init the Smart Contract Instance - when library is available
     useEffect(() => {
@@ -28,10 +34,9 @@ export default function Presale() {
         }
     }, [library]);
     
-    async function initContractInstance() {        
-        var ci = new library.eth.Contract( window.rfp_abi , '0x59238A0D412d925f729D95D3b028f79e46e4c69a');
-        
-        setContractInstance(ci);
+    async function initContractInstance() {     
+        var fundingInstance = new library.eth.Contract(window.funding_abi, '0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3');
+        setFundingContractInstance(fundingInstance);
         console.log("init contract instance...");
     }
 
@@ -54,7 +59,7 @@ export default function Presale() {
     //EVENT LISTENER
     async function startListener() {
         console.log('starting listener...');
-        contractInstance.events.allEvents()
+        rfpContractInstance.events.allEvents()
             .on('data', (event) => {
                 console.log(event);
             })
@@ -64,17 +69,16 @@ export default function Presale() {
 
     async function getMaxAmt() {
         //calling the public variable in contract
-        let data = await contractInstance.methods.getMaxAmount().call();
+        let data = await rfpContractInstance.methods.getMaxAmount().call();
         console.log('Max Amount: ', data);
     }
 
     async function makePurchase() {
-        let paymentAmt = library.utils.toBN(5, 'ether' );
-        //let paymentAmt = library.utils.fromWei('1000000000000000000', 'ether');
-        console.log(paymentAmt);
-        await contractInstance.methods.depositUSDC(
+        let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
+        console.log('payment amount', paymentAmt);
+        await rfpContractInstance.methods.depositUSDC(
             paymentAmt
-          ).send({ from: account, value: paymentAmt }).then(function(receipt){
+          ).send({ from: account }).then(function(receipt){
               let eventLog = receipt.events.DataLog.returnValues[0]; 
               console.log('__>: ', eventLog);
           });
@@ -88,28 +92,15 @@ export default function Presale() {
         }).catch(err => console.log(err));;
     }
 
-    async function estimateGas() {
-        let paymentAmt = library.utils.fromWei('1000000000000000000', 'ether');
-        // console.log('payment amt: ', paymentAmt);
-        // let encodedABI = contractInstance.methods.depositUSDC(paymentAmt).encodeABI();
-        // console.log('encoded abi: ', encodedABI);
-        // let estimateGas = await library.eth.estimateGas(
-        //     {
-        //         //"value": '0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b', // Only tokens
-        //         "data": contractInstance.methods.depositUSDC(paymentAmt).encodeABI(),
-        //         "from": account,
-        //         "to": '0xd3B152290e429038Cf9aC0e1F03Bc1e9eB05b6fb'
-        //     }
-        //     );
-        //     console.log('gas estimate', estimateGas);
+    async function getRequestSelf() {
+        console.log('getRequestSelf running ... ');
+        await fundingContractInstance.methods.getRequestsSelf().call({ from: account}).then(function(receipt) {
+            console.log('getRequestSelf finished: ', receipt[0][0]);
+            var rfpInstance = new library.eth.Contract( window.rfp_abi , receipt[0][0]);        
+           setRfpContractInstance(rfpInstance);
+        }).catch(err => console.log(err));
+           
 
-        await contractInstance.methods.depositUSDC(paymentAmt).estimateGas({from: account, value: paymentAmt})
-            .then(function(gasAmount){
-                console.log('gas: ', gasAmount);
-            })
-            .catch(function(error){
-                console.log('err: ', error);
-            });
     }
 
     return (
@@ -141,15 +132,24 @@ export default function Presale() {
                         <Button variant='dark' onClick={ getMaxAmt }>Max Amount?</Button>  
                     </Col>
                     <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ makePurchase }>make payment</Button>  
-                    </Col>
-                    <Col md={{ span: 4 }} className='text-center'>
                         <Button variant='dark' onClick={ approveUSDC }>approve usdc</Button>  
                     </Col>
                     <Col md={{ span: 4 }} className='text-center'>
-                        <Button variant='dark' onClick={ estimateGas }>estimate gas</Button>  
+                        <Button variant='dark' onClick={ getRequestSelf }>get my RFP</Button>  
                     </Col>
                 </Row> 
+                <Row className='mt-5 mb-5'>
+                    <Col className='text-center'>
+                        <h6>USDC Amount:</h6>
+                        <FormControl
+                            type='text' value={ depositAmount } 
+                            onChange={ (event) => 
+                                setDepositAmount(event.target.value) }/>
+                    </Col>
+                    <Col md={{ span: 4 }} className='text-center'>
+                        <Button variant='dark' onClick={ makePurchase }>make payment</Button>  
+                    </Col>
+                </Row>
         </Container>
     )
 
