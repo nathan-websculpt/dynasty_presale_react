@@ -71,26 +71,41 @@ export default function Presale() {
         }
     }
 
-    async function makePurchase() {
-        let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
-        console.log('payment amount', paymentAmt);
-        await rfpContractInstance.methods.depositUSDC(
-            paymentAmt
-          ).send({ from: account }).then(function(receipt){
-              let eventLog = receipt.events.DataLog.returnValues[0]; 
-              console.log('__>: ', eventLog);
-          });
-    }
-
     async function approveUSDC() {
         console.log('approveUSDC running ... ');
-        let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
-        console.log('amount to approve', paymentAmt);
-        let usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
-        await usdc_contract.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
-            setShowPayment(true);
-            console.log('approveUSDC finished: ', receipt);
-        }).catch(err => console.log(err));
+        let isNotNumber = isNaN(depositAmount);
+        console.log('isNotNumber: ', isNotNumber);
+
+        if(isNotNumber == false) {
+            let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
+            console.log('amount to approve', paymentAmt);
+            let usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
+            await usdc_contract.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
+                setShowPayment(true);
+                console.log('approveUSDC finished: ', receipt);
+            }).catch(err => console.log(err));
+        } else {
+            alert('please enter a valid number');
+        }
+    }
+
+    async function makePurchase() {
+        console.log('approveUSDC running ... ');
+        let isNotNumber = isNaN(depositAmount);
+        console.log('isNotNumber: ', isNotNumber);
+
+        if(isNotNumber == false) {
+            let paymentAmt = library.utils.toBN(depositAmount, 'ether' );
+            console.log('payment amount', paymentAmt);
+            await rfpContractInstance.methods.depositUSDC(
+                paymentAmt
+            ).send({ from: account }).then(function(receipt){
+                //let eventLog = receipt.events.DataLog.returnValues[0]; 
+                console.log('deposit __>: ', receipt);
+            }).catch(err => console.log(err));     
+        } else {
+            alert('please enter a valid number');
+        }
     }
 
     async function getRequestSelf() {
