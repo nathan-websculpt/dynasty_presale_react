@@ -157,6 +157,11 @@ export default function Presale() {
 
     return (
         <Container>
+            <Row className='mt-1 mb-1'>
+                <Col className='text-center'>
+                    <h1>Dynasty Presale Version 1.0</h1>
+                </Col>
+            </Row>
             <Row className='mt-5 mb-5'>
                 <Col className='text-center'>
                         {active ? <span>Connected Account: <b>{account}</b></span> : <span>Not Connected</span>} 
