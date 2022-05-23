@@ -12,9 +12,9 @@ window.rfp_abi = [
 				"type": "address"
 			},
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "_maxAmountUSDC",
-				"type": "uint32"
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint32",
@@ -75,9 +75,9 @@ window.rfp_abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "_amount",
-				"type": "uint32"
+				"type": "uint256"
 			}
 		],
 		"name": "depositUSDC",
@@ -87,12 +87,38 @@ window.rfp_abi = [
 	},
 	{
 		"inputs": [],
+		"name": "getCurrAllowanceUSDC",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getMaxAmountUSDC",
 		"outputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "",
-				"type": "uint32"
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getPaidAmountUSDC",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -328,9 +354,9 @@ window.funding_abi = [
 				"type": "string"
 			},
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "_maxAmountUSDC",
-				"type": "uint32"
+				"type": "uint256"
 			},
 			{
 				"internalType": "address",
@@ -364,9 +390,9 @@ window.funding_abi = [
 				"type": "uint32"
 			},
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "_amount",
-				"type": "uint32"
+				"type": "uint256"
 			},
 			{
 				"internalType": "bool",
@@ -387,9 +413,9 @@ window.funding_abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint32",
+				"internalType": "uint256",
 				"name": "_amount",
-				"type": "uint32"
+				"type": "uint256"
 			},
 			{
 				"internalType": "address",

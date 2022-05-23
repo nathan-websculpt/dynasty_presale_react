@@ -40,19 +40,21 @@ export default function Presale() {
             setDappMessage('');
             setShowMessage(false);
             setShowRFP(true);
-            console.log('useEffect() initialized the contract instance');
+
+            if(rfpContractInstance != null) {
+                handleAllowanceDisplay();
+            }
         } else {
             setDappMessage('You must have a wallet connected to deposit');
             setShowMessage(true);
             setShowRFP(false);
             setShowApprove(false);
             setShowPayment(false);
-            console.log('library is null...');
         }
-    }, [library]);
+    }, [library, rfpContractInstance]);
     
     async function initContractInstance() {     
-        var fundingInstance = new library.eth.Contract(window.funding_abi, '0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3');
+        var fundingInstance = new library.eth.Contract(window.funding_abi, '0xEd148Baa6CD5721dcc43595273D40F6f1bffdED8');
         setFundingContractInstance(fundingInstance);
 
         var usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
@@ -77,16 +79,15 @@ export default function Presale() {
     }
 
     async function approveUSDC() {
-        console.log('approveUSDC running ... ');
         let isNotNumber = isNaN(depositAmount);
         console.log('isNotNumber: ', isNotNumber);
 
         if(isNotNumber == false) {
             let USDCdecimals = await usdcContractInstance.methods.decimals().call();
-            let paymentAmt = library.utils.toBN(( depositAmount * (10 ** USDCdecimals)), 'ether' );
-            console.log('amount to approve', paymentAmt);
+            let paymentAmt = handleToConversion(depositAmount, USDCdecimals);
+            console.log('amount to approve: ', paymentAmt);
 
-            await usdcContractInstance.methods.approve('0x9964EdB894D2150bDa68B5513542d1DB4Ab036e3', paymentAmt).send({ from: account}).then(function(receipt) {
+            await usdcContractInstance.methods.approve('0xEd148Baa6CD5721dcc43595273D40F6f1bffdED8', paymentAmt).send({ from: account}).then(function(receipt) {
                 setShowPayment(true);
                 console.log('approveUSDC finished: ', receipt);
             }).catch(err => console.log(err));
@@ -96,14 +97,13 @@ export default function Presale() {
     }
 
     async function makePurchase() {
-        console.log('approveUSDC running ... ');
         let isNotNumber = isNaN(depositAmount);
         console.log('isNotNumber: ', isNotNumber);
 
         if(isNotNumber == false) {
             let USDCdecimals = await usdcContractInstance.methods.decimals().call();
-            let paymentAmt = library.utils.toBN(( depositAmount * (10 ** USDCdecimals)), 'ether' );
-            console.log('amount to approve', paymentAmt);
+            let paymentAmt = handleToConversion(depositAmount, USDCdecimals);
+            console.log('amount to deposit: ', paymentAmt);
 
             await rfpContractInstance.methods.depositUSDC(
                 paymentAmt
@@ -116,13 +116,41 @@ export default function Presale() {
     }
 
     async function getRequestSelf() {
-        console.log('getRequestSelf running ... ');
         await fundingContractInstance.methods.getRequestsSelf().call({ from: account}).then(function(receipt) {
             console.log('getRequestSelf finished: ', receipt[0][0]);
             var rfpInstance = new library.eth.Contract( window.rfp_abi , receipt[0][0]);        
            setRfpContractInstance(rfpInstance);
            setShowApprove(true);
         }).catch(err => console.log(err));       
+    }
+
+    async function handleAllowanceDisplay() {
+        let USDCdecimals = await usdcContractInstance.methods.decimals().call();
+        if(rfpContractInstance != null) {
+            let maxAmt = await rfpContractInstance.methods.getMaxAmountUSDC().call({from: account});
+            console.log('max amount: ', maxAmt);
+
+            let paidAmt = await rfpContractInstance.methods.getPaidAmountUSDC().call({from: account});
+            console.log('paid amount: ', paidAmt);
+
+            let diff = maxAmt - paidAmt;
+            if(diff > 0) {
+                diff = diff / (10 ** USDCdecimals);
+                setDappMessage('You can still deposit: ' + diff);
+                setShowMessage(true);
+            } else {
+                setDappMessage('You have deposited the max amount allowed');
+                setShowMessage(true);
+            }
+        }
+    }
+
+    function handleToConversion (amount, dec){
+        let stringf = "";
+        for(var i=0;i < dec; i++){
+            stringf = stringf+"0";
+        }
+        return amount+stringf;
     }
 
     return (
@@ -149,7 +177,7 @@ export default function Presale() {
                 
                 <Row className='mt-5 mb-5'>  
                     <Col className='text-center'>
-                        <h6 style={{display: showMessage ? "block" : "none"}}>{dappMessage}</h6>
+                        <h5 style={{display: showMessage ? "block" : "none"}}>{dappMessage}</h5>
                     </Col>
                 </Row> 
 
