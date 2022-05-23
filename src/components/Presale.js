@@ -137,7 +137,8 @@ export default function Presale() {
             let diff = maxAmt - paidAmt;
             if(diff > 0) {
                 diff = diff / (10 ** USDCdecimals);
-                setDappMessage('You can still deposit: ' + diff);
+
+                setDappMessage('You can still deposit: ' + diff.toLocaleString());
                 setShowMessage(true);
             } else {
                 setDappMessage('You have deposited the max amount allowed');
