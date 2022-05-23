@@ -109,6 +109,7 @@ export default function Presale() {
                 paymentAmt
             ).send({ from: account }).then(function(receipt){
                 console.log('deposit __>: ', receipt);
+                handleAllowanceDisplay();
             }).catch(err => console.log(err));     
         } else {
             alert('please enter a valid number');
