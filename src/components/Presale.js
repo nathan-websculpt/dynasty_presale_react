@@ -122,7 +122,7 @@ export default function Presale() {
             var rfpInstance = new library.eth.Contract( window.rfp_abi , receipt[0][0]);        
            setRfpContractInstance(rfpInstance);
            setShowApprove(true);
-        }).catch(err => console.log(err));       
+        }).catch(err => alert('there is no request for this address, please ask the Dynasty Owner for a new request'));       
     }
 
     async function handleAllowanceDisplay() {
@@ -205,12 +205,12 @@ export default function Presale() {
                 </Row>
                 <Row>
                     <Col className='text-center' style={{display: showApprove ? "inline-block" : "none"}}>
-                        <Button variant='dark' onClick={ approveUSDC }>approve usdc</Button>  
+                        <Button variant='dark' onClick={ approveUSDC }>Approve USDC</Button>  
                     </Col>
                 </Row>
                 <Row className='mt-3 mb-5'>
                     <Col className='text-center' style={{display: showPayment ? "inline-block" : "none"}}>
-                        <Button variant='dark' onClick={ makePurchase }>make payment</Button>  
+                        <Button variant='dark' onClick={ makePurchase }>Make Payment</Button>  
                     </Col>
                 </Row>
         </Container>
