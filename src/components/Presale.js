@@ -54,10 +54,10 @@ export default function Presale() {
     }, [library, rfpContractInstance]);
     
     async function initContractInstance() {     
-        var fundingInstance = new library.eth.Contract(window.funding_abi, '0xEd148Baa6CD5721dcc43595273D40F6f1bffdED8');
+        var fundingInstance = new library.eth.Contract(window.funding_abi, '0x99c5231c0D33058B72985B45A2F3C4A158Bf534A');
         setFundingContractInstance(fundingInstance);
 
-        var usdc_contract = new library.eth.Contract(window.usdc_abi, '0x1600c9592aC5Bbe9441f0e01441CA4BAc1Ec4e86');
+        var usdc_contract = new library.eth.Contract(window.usdc_abi, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48');
         setusdcContractInstance(usdc_contract);
         console.log("init contract instance...");
     }
@@ -87,7 +87,7 @@ export default function Presale() {
             let paymentAmt = handleToConversion(depositAmount, USDCdecimals);
             console.log('amount to approve: ', paymentAmt);
 
-            await usdcContractInstance.methods.approve('0xEd148Baa6CD5721dcc43595273D40F6f1bffdED8', paymentAmt).send({ from: account}).then(function(receipt) {
+            await usdcContractInstance.methods.approve('0x99c5231c0D33058B72985B45A2F3C4A158Bf534A', paymentAmt).send({ from: account}).then(function(receipt) {
                 setShowPayment(true);
                 console.log('approveUSDC finished: ', receipt);
             }).catch(err => console.log(err));
